@@ -81,6 +81,8 @@ interface BusinessContextType {
     supplier?: string;
   }) => string;
 
+  deleteStockItem: (id: string) => void;
+
   recordCashClosing: (closingData: Omit<DailyCashClosing, 'id' | 'closedAt'>) => string;
 
   updateSettings: (newSettings: Partial<AppSettings>) => void;
@@ -1024,6 +1026,13 @@ export const BusinessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     localStorage.removeItem(LOCAL_STORAGE_KEY);
   };
 
+  /**
+   * Delete stock item from inventory
+   */
+  const deleteStockItem = (id: string) => {
+    setStockItems((prev) => prev.filter((s) => s.id !== id));
+  };
+
   return (
     <BusinessContext.Provider
       value={{
@@ -1047,6 +1056,7 @@ export const BusinessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         recordStockMovement,
         performStockCount,
         addStockItem,
+        deleteStockItem,
         addProduct,
         updateProduct,
         saveRecipe,

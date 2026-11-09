@@ -12,6 +12,7 @@ import {
   ArrowDownRight,
   RefreshCw,
   X,
+  Trash2,
 } from 'lucide-react';
 import { useBusiness } from '../context/BusinessContext';
 import { StockCategory, StockItem, UnitOfMeasure } from '../types';
@@ -24,7 +25,7 @@ interface StockPageProps {
 }
 
 export const StockPage: React.FC<StockPageProps> = ({ onOpenStockCount }) => {
-  const { stockItems, stockMovements } = useBusiness();
+  const { stockItems, stockMovements, deleteStockItem } = useBusiness();
 
   const [activeTab, setActiveTab] = useState<'itens' | 'movimentacoes'>('itens');
   const [searchTerm, setSearchTerm] = useState('');
@@ -35,6 +36,7 @@ export const StockPage: React.FC<StockPageProps> = ({ onOpenStockCount }) => {
 
   // New stock item modal state
   const [isNewItemModalOpen, setIsNewItemModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<StockItem | null>(null);
 
   const categories: StockCategory[] = [
     'Carnes',
@@ -303,15 +305,24 @@ export const StockPage: React.FC<StockPageProps> = ({ onOpenStockCount }) => {
                         </td>
 
                         <td className="py-3 px-4 text-right">
-                          <button
-                            onClick={() => {
-                              setMovementModalItem(item);
-                              setIsMovementModalOpen(true);
-                            }}
-                            className="px-2.5 py-1 text-[11px] font-semibold text-stone-700 hover:text-stone-900 bg-white hover:bg-stone-50 border border-stone-200 rounded-md transition-colors cursor-pointer"
-                          >
-                            Movimentar
-                          </button>
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => {
+                                setMovementModalItem(item);
+                                setIsMovementModalOpen(true);
+                              }}
+                              className="px-2.5 py-1 text-[11px] font-semibold text-stone-700 hover:text-stone-900 bg-white hover:bg-stone-50 border border-stone-200 rounded-md transition-colors cursor-pointer"
+                            >
+                              Movimentar
+                            </button>
+                            <button
+                              onClick={() => setItemToDelete(item)}
+                              title="Remover item do estoque"
+                              className="p-1.5 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -412,6 +423,45 @@ export const StockPage: React.FC<StockPageProps> = ({ onOpenStockCount }) => {
           isOpen={isNewItemModalOpen}
           onClose={() => setIsNewItemModalOpen(false)}
         />
+      )}
+
+      {/* Delete Item Confirmation Modal */}
+      {itemToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs">
+          <div className="glass-panel w-full max-w-sm rounded-2xl p-5 shadow-xl space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-red-100 text-red-700 flex items-center justify-center shrink-0">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-stone-900">Remover do Estoque?</h3>
+                <p className="text-xs text-stone-500">
+                  Você está prestes a remover <strong className="text-stone-800">{itemToDelete.name}</strong>.
+                </p>
+              </div>
+            </div>
+            <p className="text-xs text-stone-600 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
+              Esta ação removerá o item da sua lista de controle de estoque e inventário.
+            </p>
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                onClick={() => setItemToDelete(null)}
+                className="px-3.5 py-1.5 text-xs font-semibold text-stone-600 hover:text-stone-900 border border-stone-200 rounded-xl transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  deleteStockItem(itemToDelete.id);
+                  setItemToDelete(null);
+                }}
+                className="px-4 py-1.5 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors shadow-xs cursor-pointer"
+              >
+                Confirmar Remoção
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
