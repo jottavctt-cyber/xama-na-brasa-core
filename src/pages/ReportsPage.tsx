@@ -132,10 +132,10 @@ export const ReportsPage: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-1 p-1 bg-stone-200/60 rounded-xl w-fit text-xs font-medium">
+      <div className="flex items-center gap-1 p-1 bg-stone-200/60 rounded-xl overflow-x-auto no-scrollbar touch-scroll max-w-full text-xs font-medium">
         <button
           onClick={() => setReportTab('dre')}
-          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
             reportTab === 'dre' ? 'bg-white text-stone-900 shadow-xs font-semibold' : 'text-stone-600 hover:text-stone-900'
           }`}
         >
@@ -143,7 +143,7 @@ export const ReportsPage: React.FC = () => {
         </button>
         <button
           onClick={() => setReportTab('vendas_produto')}
-          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
             reportTab === 'vendas_produto'
               ? 'bg-white text-stone-900 shadow-xs font-semibold'
               : 'text-stone-600 hover:text-stone-900'
@@ -153,7 +153,7 @@ export const ReportsPage: React.FC = () => {
         </button>
         <button
           onClick={() => setReportTab('despesas')}
-          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
             reportTab === 'despesas'
               ? 'bg-white text-stone-900 shadow-xs font-semibold'
               : 'text-stone-600 hover:text-stone-900'
@@ -163,7 +163,7 @@ export const ReportsPage: React.FC = () => {
         </button>
         <button
           onClick={() => setReportTab('perdas_estoque')}
-          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
             reportTab === 'perdas_estoque'
               ? 'bg-white text-stone-900 shadow-xs font-semibold'
               : 'text-stone-600 hover:text-stone-900'
@@ -173,7 +173,7 @@ export const ReportsPage: React.FC = () => {
         </button>
         <button
           onClick={() => setReportTab('estimativas')}
-          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
             reportTab === 'estimativas'
               ? 'bg-white text-stone-900 shadow-xs font-semibold'
               : 'text-stone-600 hover:text-stone-900'

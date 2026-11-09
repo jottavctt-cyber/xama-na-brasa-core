@@ -212,19 +212,19 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-xs">
-      <div className="glass-panel w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-stone-900/50 backdrop-blur-xs">
+      <div className="glass-panel w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[94vh]">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-stone-200/80 flex items-center justify-between">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-stone-200/80 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
               <UtensilsCrossed className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-stone-900">
+              <h3 className="text-sm font-bold text-stone-900 leading-tight">
                 {productToEdit ? 'Editar Produto e Ficha Técnica' : 'Novo Produto do Cardápio'}
               </h3>
-              <p className="text-[11px] text-stone-500">
+              <p className="text-[10px] sm:text-[11px] text-stone-500">
                 Fórmula explícita de custo e cálculo de margem sem números inventados
               </p>
             </div>
@@ -238,7 +238,7 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4">
+        <form onSubmit={handleSubmit} className="p-3.5 sm:p-6 overflow-y-auto space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="md:col-span-2">
               <label className="block text-xs font-semibold text-stone-700 mb-1">
@@ -315,9 +315,9 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
           <div className="p-3 bg-stone-100/70 border border-stone-200/80 rounded-xl">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-xs font-bold text-stone-900">Possui Ficha Técnica / Receita?</span>
+                <span className="text-xs font-bold text-stone-900">Possui Ficha Técnica / Receita Fracionada?</span>
                 <p className="text-[11px] text-stone-500">
-                  Desmarque para produtos de revenda direta pronta (cervejas, refrigerantes, água).
+                  Desmarque para porções prontas (coxinhas, bolinhos, risoles, mandioca) ou produtos de revenda (bebidas).
                 </p>
               </div>
               <input
@@ -330,9 +330,9 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
 
             {!hasRecipe && (
               <div className="mt-3 pt-3 border-t border-stone-200 flex gap-4 items-center">
-                <div className="w-48">
+                <div className="w-56">
                   <label className="block text-[11px] font-semibold text-stone-700 mb-1">
-                    Custo Unitário de Compra (R$)
+                    Custo Unitário da Porção Pronta (R$)
                   </label>
                   <input
                     type="number"

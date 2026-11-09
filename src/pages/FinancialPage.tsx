@@ -160,10 +160,10 @@ export const FinancialPage: React.FC<FinancialPageProps> = ({
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex items-center gap-1 p-1 bg-stone-200/60 rounded-xl w-fit text-xs font-medium">
+      <div className="flex items-center gap-1 p-1 bg-stone-200/60 rounded-xl overflow-x-auto no-scrollbar touch-scroll max-w-full text-xs font-medium">
         <button
           onClick={() => setActiveTab('transacoes')}
-          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
             activeTab === 'transacoes'
               ? 'bg-white text-stone-900 shadow-xs font-semibold'
               : 'text-stone-600 hover:text-stone-900'
@@ -173,7 +173,7 @@ export const FinancialPage: React.FC<FinancialPageProps> = ({
         </button>
         <button
           onClick={() => setActiveTab('contas_a_pagar')}
-          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
+          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
             activeTab === 'contas_a_pagar'
               ? 'bg-white text-stone-900 shadow-xs font-semibold'
               : 'text-stone-600 hover:text-stone-900'
@@ -188,7 +188,7 @@ export const FinancialPage: React.FC<FinancialPageProps> = ({
         </button>
         <button
           onClick={() => setActiveTab('recorrentes')}
-          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
             activeTab === 'recorrentes'
               ? 'bg-white text-stone-900 shadow-xs font-semibold'
               : 'text-stone-600 hover:text-stone-900'
@@ -198,7 +198,7 @@ export const FinancialPage: React.FC<FinancialPageProps> = ({
         </button>
         <button
           onClick={() => setActiveTab('fechamentos')}
-          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
             activeTab === 'fechamentos'
               ? 'bg-white text-stone-900 shadow-xs font-semibold'
               : 'text-stone-600 hover:text-stone-900'
@@ -371,10 +371,10 @@ export const FinancialPage: React.FC<FinancialPageProps> = ({
           ) : (
             <div className="divide-y divide-stone-100 border border-stone-200 rounded-xl overflow-hidden bg-white/70">
               {pendingBills.map((bill) => (
-                <div key={bill.id} className="p-3.5 flex items-center justify-between gap-4 text-xs">
+                <div key={bill.id} className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                   <div>
                     <span className="font-semibold text-stone-900 block">{bill.description}</span>
-                    <div className="flex items-center gap-2 mt-0.5 text-[11px] text-stone-500">
+                    <div className="flex flex-wrap items-center gap-1.5 mt-0.5 text-[11px] text-stone-500">
                       <span>Categoria: {bill.category}</span>
                       <span>·</span>
                       <span className="text-amber-800 font-medium">
@@ -383,7 +383,7 @@ export const FinancialPage: React.FC<FinancialPageProps> = ({
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-stone-100">
                     <span className="font-mono font-bold text-stone-900 text-sm tabular-nums">
                       {formatBRL(bill.amount)}
                     </span>

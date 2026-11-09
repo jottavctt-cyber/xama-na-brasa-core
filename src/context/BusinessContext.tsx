@@ -98,9 +98,62 @@ export const BusinessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.products) setProducts(parsed.products);
+
+        // Non-destructive stock merge: ensure new portion stock items exist and obsolete sub-batches are cleaned
+        let loadedStock: StockItem[] = parsed.stockItems || INITIAL_STOCK_ITEMS;
+        const obsoleteStockIds = [
+          'stock-mini-coxinha-massa-recheio',
+          'stock-bolinho-mandioca-massa',
+          'stock-mini-risole-massa',
+          'stock-coxinha-grande-insumos',
+          'stock-bolo-mandioca-insumos',
+          'stock-bolinho-mandioca-carne-insumo',
+          'stock-feijao-tropeiro-insumos',
+        ];
+        loadedStock = loadedStock.filter((s) => !obsoleteStockIds.includes(s.id));
+
+        const portionStockIds = ['stock-mini-coxinha', 'stock-bolinho-mandioca', 'stock-mini-risole', 'stock-mandioca-torresmo'];
+        portionStockIds.forEach((id) => {
+          if (!loadedStock.some((s) => s.id === id)) {
+            const initialItem = INITIAL_STOCK_ITEMS.find((s) => s.id === id);
+            if (initialItem) {
+              loadedStock.push(initialItem);
+            }
+          }
+        });
+
+        // Non-destructive product upgrade: convert portion products to direct unit cost ready portions
+        let loadedProducts: Product[] = parsed.products || INITIAL_PRODUCTS;
+        loadedProducts = loadedProducts.map((p) => {
+          const isPortion =
+            p.category === 'Porções e alimentos' ||
+            p.id.includes('coxinha') ||
+            p.id.includes('mandioca') ||
+            p.id.includes('risole') ||
+            p.id.includes('torresmo');
+
+          if (isPortion) {
+            const defaultCost = p.id.includes('coxinha')
+              ? 1.79
+              : p.id.includes('risole')
+              ? 2.0
+              : p.id.includes('torresmo')
+              ? 3.4
+              : 2.5;
+
+            return {
+              ...p,
+              hasRecipe: false,
+              directUnitCost: p.directUnitCost ?? defaultCost,
+              costStatus: 'confirmed',
+            };
+          }
+          return p;
+        });
+
+        setProducts(loadedProducts);
         if (parsed.recipes) setRecipes(parsed.recipes);
-        if (parsed.stockItems) setStockItems(parsed.stockItems);
+        setStockItems(loadedStock);
         if (parsed.stockMovements) setStockMovements(parsed.stockMovements);
         if (parsed.sales) setSales(parsed.sales);
         if (parsed.transactions) setTransactions(parsed.transactions);

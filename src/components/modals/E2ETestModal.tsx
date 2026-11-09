@@ -41,24 +41,24 @@ export const E2ETestModal: React.FC<E2ETestModalProps> = ({ isOpen, onClose }) =
       : report?.results || [];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-xs">
-      <div className="glass-panel w-full max-w-3xl rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[92vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-stone-900/50 backdrop-blur-xs">
+      <div className="glass-panel w-full max-w-3xl rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[94vh]">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-stone-200/80 flex items-center justify-between">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-stone-200/80 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex items-center justify-center shadow-xs">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex items-center justify-center shadow-xs shrink-0">
               <ShieldCheck className="w-4.5 h-4.5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-stone-900">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <h3 className="text-sm font-bold text-stone-900 leading-tight">
                   Auditoria de Precisão End-to-End (E2E)
                 </h3>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900">
                   100% Determinístico
                 </span>
               </div>
-              <p className="text-[11px] text-stone-500">
+              <p className="text-[10px] sm:text-[11px] text-stone-500">
                 Simulação e verificação de todas as movimentações, baixas, fórmulas e fechamentos
               </p>
             </div>
@@ -72,7 +72,7 @@ export const E2ETestModal: React.FC<E2ETestModalProps> = ({ isOpen, onClose }) =
         </div>
 
         {/* Body */}
-        <div className="p-6 overflow-y-auto space-y-5">
+        <div className="p-3.5 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5">
           {/* Action Trigger Box */}
           <div className="p-4 bg-gradient-to-r from-stone-50 via-white to-amber-50/40 border border-stone-200/80 rounded-2xl flex flex-wrap items-center justify-between gap-4">
             <div className="space-y-1">

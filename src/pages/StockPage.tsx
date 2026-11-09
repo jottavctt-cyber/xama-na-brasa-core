@@ -140,10 +140,10 @@ export const StockPage: React.FC<StockPageProps> = ({ onOpenStockCount }) => {
       </div>
 
       {/* Tab Switcher */}
-      <div className="flex items-center gap-1 p-1 bg-stone-200/60 rounded-xl w-fit text-xs font-medium">
+      <div className="flex items-center gap-1 p-1 bg-stone-200/60 rounded-xl overflow-x-auto no-scrollbar touch-scroll max-w-full text-xs font-medium">
         <button
           onClick={() => setActiveTab('itens')}
-          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
             activeTab === 'itens' ? 'bg-white text-stone-900 shadow-xs font-semibold' : 'text-stone-600 hover:text-stone-900'
           }`}
         >
@@ -151,7 +151,7 @@ export const StockPage: React.FC<StockPageProps> = ({ onOpenStockCount }) => {
         </button>
         <button
           onClick={() => setActiveTab('movimentacoes')}
-          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
             activeTab === 'movimentacoes'
               ? 'bg-white text-stone-900 shadow-xs font-semibold'
               : 'text-stone-600 hover:text-stone-900'

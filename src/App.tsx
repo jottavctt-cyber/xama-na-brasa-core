@@ -4,6 +4,13 @@
  */
 
 import React, { useState } from 'react';
+import {
+  LayoutDashboard,
+  Receipt,
+  Boxes,
+  Menu as MenuIcon,
+  Plus,
+} from 'lucide-react';
 import { BusinessProvider } from './context/BusinessContext';
 import { Sidebar, PageId } from './components/Sidebar';
 import { Header } from './components/Header';
@@ -37,6 +44,7 @@ const PAGE_TITLES: Record<PageId, string> = {
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState<PageId>('overview');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Global modals
   const [isSaleModalOpen, setIsSaleModalOpen] = useState(false);
@@ -86,11 +94,19 @@ function AppContent() {
 
   return (
     <div className="flex min-h-screen bg-[#FAF9F5] text-stone-900">
-      {/* Fixed Desktop Sidebar */}
+      {/* Responsive Sidebar (Fixed on Desktop, Slide-over Drawer on Mobile) */}
       <Sidebar
         currentPage={currentPage}
-        onSelectPage={setCurrentPage}
-        onOpenNewSale={() => setIsSaleModalOpen(true)}
+        onSelectPage={(page) => {
+          setCurrentPage(page);
+          setIsMobileMenuOpen(false);
+        }}
+        onOpenNewSale={() => {
+          setIsSaleModalOpen(true);
+          setIsMobileMenuOpen(false);
+        }}
+        mobileOpen={isMobileMenuOpen}
+        onMobileClose={() => setIsMobileMenuOpen(false)}
       />
 
       {/* Main View Area */}
@@ -102,12 +118,84 @@ function AppContent() {
           onOpenStockCount={() => setIsStockCountModalOpen(true)}
           onOpenCashClosing={() => setIsCashClosingModalOpen(true)}
           onOpenE2ETest={() => setIsE2ETestModalOpen(true)}
+          onToggleMobileMenu={() => setIsMobileMenuOpen((prev) => !prev)}
         />
 
-        <main className="flex-1 p-6 max-w-7xl w-full mx-auto">
+        {/* Content area with bottom padding on mobile for the fixed tab bar */}
+        <main className="flex-1 p-3.5 sm:p-5 md:p-6 pb-24 md:pb-8 max-w-7xl w-full mx-auto">
           {renderActivePage()}
         </main>
       </div>
+
+      {/* Mobile Ergonomic Bottom Navigation Bar (md:hidden) */}
+      <nav
+        aria-label="Navegação Rápida Mobile"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-[0_-4px_20px_rgba(28,25,23,0.06)] px-2 py-1.5 flex items-center justify-around pb-[max(0.6rem,env(safe-area-inset-bottom))]"
+      >
+        {/* Tab 1: Visão Geral */}
+        <button
+          onClick={() => setCurrentPage('overview')}
+          className={`flex flex-col items-center justify-center min-w-[56px] py-1 transition-colors cursor-pointer ${
+            currentPage === 'overview'
+              ? 'text-amber-800 font-semibold'
+              : 'text-stone-500 hover:text-stone-800'
+          }`}
+        >
+          <LayoutDashboard className="w-5 h-5 mb-0.5" />
+          <span className="text-[10px] tracking-tight">Início</span>
+        </button>
+
+        {/* Tab 2: Vendas */}
+        <button
+          onClick={() => setCurrentPage('sales')}
+          className={`flex flex-col items-center justify-center min-w-[56px] py-1 transition-colors cursor-pointer ${
+            currentPage === 'sales'
+              ? 'text-amber-800 font-semibold'
+              : 'text-stone-500 hover:text-stone-800'
+          }`}
+        >
+          <Receipt className="w-5 h-5 mb-0.5" />
+          <span className="text-[10px] tracking-tight">Vendas</span>
+        </button>
+
+        {/* Central Floating Primary Action: + Venda */}
+        <button
+          onClick={() => setIsSaleModalOpen(true)}
+          className="flex flex-col items-center justify-center -mt-5 cursor-pointer group"
+          aria-label="Registrar Nova Venda"
+        >
+          <div className="w-13 h-13 rounded-full bg-gradient-to-tr from-amber-600 via-orange-600 to-amber-500 text-white shadow-lg shadow-amber-900/25 border-3 border-white flex items-center justify-center group-active:scale-95 transition-transform">
+            <Plus className="w-6 h-6 stroke-[2.5]" />
+          </div>
+          <span className="text-[10px] font-bold text-amber-900 mt-0.5">Vender</span>
+        </button>
+
+        {/* Tab 4: Estoque */}
+        <button
+          onClick={() => setCurrentPage('stock')}
+          className={`flex flex-col items-center justify-center min-w-[56px] py-1 transition-colors cursor-pointer ${
+            currentPage === 'stock'
+              ? 'text-amber-800 font-semibold'
+              : 'text-stone-500 hover:text-stone-800'
+          }`}
+        >
+          <Boxes className="w-5 h-5 mb-0.5" />
+          <span className="text-[10px] tracking-tight">Estoque</span>
+        </button>
+
+        {/* Tab 5: Menu Gaveta Completo */}
+        <button
+          onClick={() => setIsMobileMenuOpen(true)}
+          className={`flex flex-col items-center justify-center min-w-[56px] py-1 transition-colors cursor-pointer ${
+            isMobileMenuOpen
+              ? 'text-amber-800 font-semibold'
+              : 'text-stone-500 hover:text-stone-800'
+          }`}
+        >
+          <MenuIcon className="w-5 h-5 mb-0.5" />
+          <span className="text-[10px] tracking-tight">Mais</span>
+        </button>
+      </nav>
 
       {/* Modals */}
       <NewSaleModal

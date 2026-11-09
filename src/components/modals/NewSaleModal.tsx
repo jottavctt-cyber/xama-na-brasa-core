@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Plus, Trash2, AlertTriangle, CheckCircle2, ShoppingBag } from 'lucide-react';
+import { X, Plus, Trash2, AlertTriangle, CheckCircle2, ShoppingBag, Flame } from 'lucide-react';
 import { useBusiness } from '../../context/BusinessContext';
 import { Product, PaymentMethod, SalesChannel } from '../../types';
 import { formatBRL } from '../../utils/deterministicMath';
@@ -95,17 +95,17 @@ export const NewSaleModal: React.FC<NewSaleModalProps> = ({ isOpen, onClose }) =
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-xs">
-      <div className="glass-panel w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-stone-900/50 backdrop-blur-xs">
+      <div className="glass-panel w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[94vh]">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-stone-200/80 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-stone-200/80 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
               <ShoppingBag className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-stone-900">Registrar Venda</h3>
-              <p className="text-[11px] text-stone-500">
+              <h3 className="text-sm font-bold text-stone-900 leading-tight">Registrar Venda</h3>
+              <p className="text-[10px] sm:text-[11px] text-stone-500">
                 Baixa de estoque e congelamento de preço no momento da venda
               </p>
             </div>
@@ -119,12 +119,33 @@ export const NewSaleModal: React.FC<NewSaleModalProps> = ({ isOpen, onClose }) =
         </div>
 
         {/* Form Body */}
-        <div className="p-6 overflow-y-auto space-y-5">
-          {/* Item Selector Quick Strip */}
+        <div className="p-3.5 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5">
+          {/* Quick Item Addition & Dropdown */}
           <div>
             <label className="block text-xs font-semibold text-stone-700 mb-1.5">
               Adicionar Produtos do Cardápio
             </label>
+
+            {/* Quick 1-Tap Touch Chips for Mobile/Counter */}
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar touch-scroll pb-2 mb-2">
+              {activeProducts.slice(0, 6).map((prod) => (
+                <button
+                  key={prod.id}
+                  type="button"
+                  onClick={() => handleAddItem(prod)}
+                  className="flex items-center gap-1 px-2.5 py-1.5 bg-stone-100 hover:bg-amber-100/70 border border-stone-200/80 rounded-lg text-xs font-medium text-stone-800 transition-colors cursor-pointer shrink-0 whitespace-nowrap active:scale-95"
+                >
+                  <Plus className="w-3 h-3 text-amber-700 shrink-0" />
+                  <span className="truncate max-w-[120px]">{prod.name}</span>
+                  {prod.salePrice !== null && (
+                    <span className="text-[10px] text-stone-500 font-mono">
+                      {formatBRL(prod.salePrice)}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+
             <div className="flex gap-2">
               <select
                 value={selectedProductId}
@@ -136,9 +157,9 @@ export const NewSaleModal: React.FC<NewSaleModalProps> = ({ isOpen, onClose }) =
                     setSelectedProductId('');
                   }
                 }}
-                className="glass-input flex-1 px-3 py-2 text-xs rounded-lg text-stone-800 cursor-pointer"
+                className="glass-input w-full px-3 py-2 text-xs rounded-lg text-stone-800 cursor-pointer"
               >
-                <option value="">Selecione um produto para adicionar...</option>
+                <option value="">Selecione outro produto no cardápio completo...</option>
                 <optgroup label="Espetinhos">
                   {activeProducts
                     .filter((p) => p.category === 'Espetinhos')
@@ -170,7 +191,7 @@ export const NewSaleModal: React.FC<NewSaleModalProps> = ({ isOpen, onClose }) =
             </div>
           </div>
 
-          {/* Selected Items Table */}
+          {/* Selected Items Table / Mobile Cards */}
           <div className="border border-stone-200/80 rounded-xl overflow-hidden bg-white/70">
             <div className="px-3 py-2 bg-stone-100/70 text-[11px] font-semibold text-stone-600 flex justify-between items-center">
               <span>Itens da Venda ({saleItems.length})</span>
@@ -179,32 +200,46 @@ export const NewSaleModal: React.FC<NewSaleModalProps> = ({ isOpen, onClose }) =
 
             {saleItems.length === 0 ? (
               <div className="p-6 text-center text-xs text-stone-500">
-                Nenhum item adicionado ainda. Escolha os produtos acima para compor a venda.
+                Nenhum item adicionado ainda. Toque nos botões rápidos ou selecione acima para compor a venda.
               </div>
             ) : (
               <div className="divide-y divide-stone-100">
                 {saleItems.map((item, idx) => {
                   const subtotal = Math.max(0, item.quantity * item.unitPrice - (item.discount || 0));
                   return (
-                    <div key={idx} className="p-3 flex items-center justify-between gap-3 text-xs">
+                    <div key={idx} className="p-2.5 sm:p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                       <div className="min-w-0 flex-1">
                         <p className="font-semibold text-stone-900 truncate">{item.productName}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <div className="flex items-center gap-1">
-                            <span className="text-[11px] text-stone-500">Qtd:</span>
-                            <input
-                              type="number"
-                              min="1"
-                              value={item.quantity}
-                              onChange={(e) =>
-                                handleUpdateItem(idx, { quantity: Math.max(1, parseInt(e.target.value) || 1) })
+                        <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                          {/* Quantity control */}
+                          <div className="flex items-center gap-1 bg-stone-100/80 px-1.5 py-0.5 rounded border border-stone-200">
+                            <span className="text-[10px] text-stone-500 font-medium">Qtd:</span>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleUpdateItem(idx, { quantity: Math.max(1, item.quantity - 1) })
                               }
-                              className="w-14 px-1.5 py-0.5 border border-stone-200 rounded text-center text-xs font-mono"
-                            />
+                              className="w-5 h-5 flex items-center justify-center font-bold text-stone-600 hover:text-stone-900 cursor-pointer"
+                            >
+                              -
+                            </button>
+                            <span className="w-6 text-center font-mono font-bold text-stone-900">
+                              {item.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleUpdateItem(idx, { quantity: item.quantity + 1 })
+                              }
+                              className="w-5 h-5 flex items-center justify-center font-bold text-stone-600 hover:text-stone-900 cursor-pointer"
+                            >
+                              +
+                            </button>
                           </div>
 
+                          {/* Unit Price */}
                           <div className="flex items-center gap-1">
-                            <span className="text-[11px] text-stone-500">Preço:</span>
+                            <span className="text-[10px] text-stone-500">R$:</span>
                             <input
                               type="number"
                               step="0.5"
@@ -216,8 +251,9 @@ export const NewSaleModal: React.FC<NewSaleModalProps> = ({ isOpen, onClose }) =
                             />
                           </div>
 
+                          {/* Discount */}
                           <div className="flex items-center gap-1">
-                            <span className="text-[11px] text-stone-500">Desc:</span>
+                            <span className="text-[10px] text-stone-500">Desc:</span>
                             <input
                               type="number"
                               step="0.5"
@@ -232,17 +268,17 @@ export const NewSaleModal: React.FC<NewSaleModalProps> = ({ isOpen, onClose }) =
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3">
-                        <span className="font-mono font-semibold text-stone-900 tabular-nums">
+                      <div className="flex items-center justify-between sm:justify-end gap-3 pt-1 sm:pt-0 border-t sm:border-t-0 border-stone-100">
+                        <span className="font-mono font-bold text-stone-900 text-sm tabular-nums">
                           {formatBRL(subtotal)}
                         </span>
                         <button
                           type="button"
                           onClick={() => handleRemoveItem(idx)}
-                          className="text-stone-400 hover:text-red-600 transition-colors p-1"
+                          className="text-stone-400 hover:text-red-600 transition-colors p-1.5 cursor-pointer"
                           title="Remover item"
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
@@ -253,142 +289,159 @@ export const NewSaleModal: React.FC<NewSaleModalProps> = ({ isOpen, onClose }) =
           </div>
 
           {/* Payment Method & Sales Channel */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-xs font-semibold text-stone-700 mb-1.5">
                 Forma de Pagamento
               </label>
-              <div className="grid grid-cols-2 gap-1.5">
-                {(
-                  [
-                    { id: 'pix', label: 'PIX' },
-                    { id: 'dinheiro', label: 'Dinheiro (Espécie)' },
-                    { id: 'debito', label: 'Cartão Débito' },
-                    { id: 'credito', label: 'Cartão Crédito' },
-                  ] as const
-                ).map((pm) => (
-                  <button
-                    key={pm.id}
-                    type="button"
-                    onClick={() => setPaymentMethod(pm.id)}
-                    className={`px-3 py-2 text-xs font-medium rounded-lg border text-left transition-colors cursor-pointer ${
-                      paymentMethod === pm.id
-                        ? 'border-amber-600 bg-amber-50/70 text-amber-900 font-semibold'
-                        : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
-                    }`}
-                  >
-                    {pm.label}
-                  </button>
-                ))}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                {(['dinheiro', 'pix', 'debito', 'credito'] as PaymentMethod[]).map(
+                  (method) => {
+                    const labels: Record<string, string> = {
+                      dinheiro: 'Dinheiro',
+                      pix: 'PIX',
+                      debito: 'Débito',
+                      credito: 'Crédito',
+                      outro: 'Outro',
+                    };
+                    return (
+                      <button
+                        key={method}
+                        type="button"
+                        onClick={() => setPaymentMethod(method)}
+                        className={`py-2 px-1 text-center rounded-lg text-xs font-medium cursor-pointer transition-colors ${
+                          paymentMethod === method
+                            ? 'bg-amber-600 text-white font-semibold shadow-xs'
+                            : 'bg-stone-100 text-stone-700 hover:bg-stone-200/70 border border-stone-200'
+                        }`}
+                      >
+                        {labels[method]}
+                      </button>
+                    );
+                  }
+                )}
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-stone-700 mb-1.5">
-                Canal de Venda & Data
+                Canal da Venda
               </label>
-              <div className="space-y-2">
-                <select
-                  value={channel}
-                  onChange={(e) => setChannel(e.target.value as SalesChannel)}
-                  className="glass-input w-full px-3 py-2 text-xs rounded-lg text-stone-800"
-                >
-                  <option value="balcao">Balcão / Retirada</option>
-                  <option value="mesa">Mesa / Consumo Local</option>
-                  <option value="entrega">Entrega / Delivery</option>
-                  <option value="outro">Outro</option>
-                </select>
-
-                <input
-                  type="datetime-local"
-                  value={saleDate}
-                  onChange={(e) => setSaleDate(e.target.value)}
-                  className="glass-input w-full px-3 py-1.5 text-xs font-mono rounded-lg text-stone-800"
-                />
+              <div className="grid grid-cols-3 gap-1.5">
+                {(['balcao', 'mesa', 'entrega'] as SalesChannel[]).map((c) => {
+                  const labels: Record<string, string> = {
+                    balcao: 'Balcão',
+                    mesa: 'Mesa',
+                    entrega: 'Entrega',
+                    outro: 'Outro',
+                  };
+                  return (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setChannel(c)}
+                      className={`py-2 px-2 text-center rounded-lg text-xs font-medium cursor-pointer transition-colors ${
+                        channel === c
+                          ? 'bg-stone-900 text-white font-semibold shadow-xs'
+                          : 'bg-stone-100 text-stone-700 hover:bg-stone-200/70 border border-stone-200'
+                      }`}
+                    >
+                      {labels[c]}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
 
-          {/* Observations */}
-          <div>
-            <label className="block text-xs font-semibold text-stone-700 mb-1">
-              Observação (Opcional)
-            </label>
-            <input
-              type="text"
-              placeholder="Ex: sem cebola, mesa 4, cliente frequente..."
-              value={observation}
-              onChange={(e) => setObservation(e.target.value)}
-              className="glass-input w-full px-3 py-2 text-xs rounded-lg text-stone-800"
-            />
+          {/* Date and Observation */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-stone-700 mb-1">
+                Data e Horário
+              </label>
+              <input
+                type="datetime-local"
+                value={saleDate}
+                onChange={(e) => setSaleDate(e.target.value)}
+                className="glass-input w-full px-3 py-1.5 text-xs font-mono rounded-lg text-stone-800"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-stone-700 mb-1">
+                Observação (Mesa / Cliente)
+              </label>
+              <input
+                type="text"
+                placeholder="Ex: Mesa 04, sem cebola..."
+                value={observation}
+                onChange={(e) => setObservation(e.target.value)}
+                className="glass-input w-full px-3 py-1.5 text-xs rounded-lg text-stone-800"
+              />
+            </div>
           </div>
 
-          {/* Warnings Banner if stock missing or incomplete */}
+          {/* Warnings Alert Box */}
           {resultWarnings && (
-            <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs space-y-1.5">
-              <div className="flex items-center gap-1.5 font-semibold text-amber-900">
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 space-y-1">
+              <div className="flex items-center gap-1.5 font-semibold text-amber-950">
                 <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0" />
-                <span>Venda registrada com alertas operacionais de estoque:</span>
+                <span>Venda registrada com alertas no estoque:</span>
               </div>
-              <ul className="list-disc list-inside text-stone-700 space-y-0.5 pl-2 text-[11px]">
-                {resultWarnings.map((warn, i) => (
-                  <li key={i}>{warn}</li>
+              <ul className="list-disc list-inside text-[11px] text-amber-800 space-y-0.5">
+                {resultWarnings.map((w, i) => (
+                  <li key={i}>{w}</li>
                 ))}
               </ul>
               <div className="pt-2 flex justify-end">
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="px-3 py-1.5 bg-amber-700 hover:bg-amber-800 text-white rounded-lg text-xs font-semibold cursor-pointer"
+                  className="px-3 py-1 bg-amber-700 hover:bg-amber-800 text-white font-medium rounded-lg text-xs cursor-pointer"
                 >
-                  Entendido, Concluir
+                  Entendido e Fechar
                 </button>
               </div>
             </div>
           )}
         </div>
 
-        {/* Footer & Totals */}
-        {!resultWarnings && (
-          <div className="px-6 py-4 border-t border-stone-200/80 bg-stone-50/70 flex items-center justify-between">
-            <div className="flex items-center gap-4 text-xs">
-              <div>
-                <span className="text-stone-500">Bruto:</span>{' '}
-                <span className="font-mono text-stone-700 tabular-nums">{formatBRL(grossTotal)}</span>
-              </div>
+        {/* Footer Summary & Submit */}
+        <div className="px-4 sm:px-6 py-3 sm:py-4 bg-stone-50/80 border-t border-stone-200/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <div className="flex items-baseline justify-between sm:justify-start gap-4">
+            <span className="text-xs text-stone-500">Total a Pagar:</span>
+            <div className="flex items-baseline gap-2">
+              <span className="text-xl sm:text-2xl font-bold font-mono text-stone-900 tabular-nums">
+                {formatBRL(netTotal)}
+              </span>
               {discountTotal > 0 && (
-                <div>
-                  <span className="text-stone-500">Descontos:</span>{' '}
-                  <span className="font-mono text-amber-800 tabular-nums">-{formatBRL(discountTotal)}</span>
-                </div>
-              )}
-              <div className="pl-3 border-l border-stone-300">
-                <span className="text-stone-500 font-medium">Total Líquido:</span>{' '}
-                <span className="font-mono text-base font-bold text-stone-900 tabular-nums">
-                  {formatBRL(netTotal)}
+                <span className="text-xs text-stone-400 line-through font-mono">
+                  {formatBRL(grossTotal)}
                 </span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleClose}
-                className="px-4 py-2 text-xs font-medium text-stone-600 hover:text-stone-900 rounded-lg hover:bg-stone-200/50 transition-colors cursor-pointer"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={handleSubmit}
-                disabled={saleItems.length === 0}
-                className="px-5 py-2 text-xs font-semibold text-white bg-amber-700 hover:bg-amber-800 rounded-lg shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-              >
-                Confirmar Venda
-              </button>
+              )}
             </div>
           </div>
-        )}
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="flex-1 sm:flex-initial px-4 py-2 text-xs font-semibold text-stone-600 hover:text-stone-900 border border-stone-200/80 rounded-xl transition-colors cursor-pointer"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              disabled={saleItems.length === 0}
+              onClick={handleSubmit}
+              className="flex-1 sm:flex-initial min-h-[44px] flex items-center justify-center gap-2 px-5 py-2 text-xs font-bold text-white bg-gradient-to-r from-amber-600 to-orange-700 hover:from-amber-700 hover:to-orange-800 rounded-xl shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer active:scale-[0.99]"
+            >
+              <CheckCircle2 className="w-4 h-4" />
+              <span>Concluir Venda</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -63,17 +63,17 @@ export const NewExpenseModal: React.FC<NewExpenseModalProps> = ({ isOpen, onClos
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-xs">
-      <div className="glass-panel w-full max-w-lg rounded-2xl shadow-xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-stone-900/50 backdrop-blur-xs">
+      <div className="glass-panel w-full max-w-lg rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[94vh]">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-stone-200/80 flex items-center justify-between">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-stone-200/80 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-stone-100 text-stone-800 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-stone-100 text-stone-800 flex items-center justify-center shrink-0">
               <Wallet className="w-4 h-4" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-stone-900">Lançar Despesa</h3>
-              <p className="text-[11px] text-stone-500">
+              <p className="text-[10px] sm:text-[11px] text-stone-500">
                 Registro no financeiro (contas a pagar ou saída imediata de caixa)
               </p>
             </div>
@@ -87,7 +87,7 @@ export const NewExpenseModal: React.FC<NewExpenseModalProps> = ({ isOpen, onClos
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-3.5 sm:p-6 overflow-y-auto space-y-4">
           <div>
             <label className="block text-xs font-semibold text-stone-700 mb-1">
               Descrição da Despesa
@@ -102,7 +102,7 @@ export const NewExpenseModal: React.FC<NewExpenseModalProps> = ({ isOpen, onClos
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-stone-700 mb-1">
                 Valor (R$)
