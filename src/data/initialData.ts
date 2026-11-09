@@ -141,18 +141,7 @@ export const INITIAL_STOCK_ITEMS: StockItem[] = [
     costStatus: 'confirmed',
     notes: '100g por unidade, custo conhecido em cerca de R$ 5,00 por unidade.',
   },
-  {
-    id: 'stock-feijao-tropeiro-insumos',
-    name: 'Insumos Feijão Tropeiro (Lote Receita)',
-    category: 'Ingredientes',
-    unit: 'un',
-    currentQuantity: null,
-    isCounted: false,
-    minStock: 1,
-    unitCost: 40.0,
-    costStatus: 'range',
-    costRangeNote: 'Receita custa R$ 40,00 e rende de 13 a 15 porções (R$ 2,67 a R$ 3,08/porção).',
-  },
+
   {
     id: 'stock-mini-coxinha',
     name: 'Mini Coxinha (Porção 25 un)',

@@ -11,6 +11,8 @@ import {
   DailyCashClosing,
   AppSettings,
   PaymentMethod,
+  StockCategory,
+  UnitOfMeasure,
 } from '../types';
 import {
   INITIAL_PRODUCTS,
@@ -66,6 +68,18 @@ interface BusinessContextType {
   updateProduct: (id: string, updates: Partial<Product>) => void;
 
   saveRecipe: (recipe: Omit<Recipe, 'id'>, existingRecipeId?: string) => void;
+
+  addStockItem: (stockData: {
+    name: string;
+    category: StockCategory;
+    unit: UnitOfMeasure;
+    minStock: number;
+    initialQuantity?: number | null;
+    unitCost?: number | null;
+    notes?: string;
+    packageDescription?: string;
+    supplier?: string;
+  }) => string;
 
   recordCashClosing: (closingData: Omit<DailyCashClosing, 'id' | 'closedAt'>) => string;
 
@@ -149,6 +163,44 @@ export const BusinessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             };
           }
           return p;
+        });
+
+        // Auto-sync products into loadedStock if missing matching stock item
+        loadedProducts.forEach((p) => {
+          const matching = loadedStock.find(
+            (s) => s.name.trim().toLowerCase() === p.name.trim().toLowerCase() || s.id.includes(p.id.replace('prod-', ''))
+          );
+          if (!matching) {
+            let cat: StockCategory = 'Outros';
+            let unit: UnitOfMeasure = 'un';
+            if (p.category === 'Espetinhos') {
+              cat = 'Carnes';
+              unit = 'un';
+            } else if (p.category === 'Bebidas') {
+              cat = 'Bebidas';
+              unit = (p as any).unit || 'garrafa';
+            } else if (p.category === 'Porções e alimentos') {
+              cat = 'Porções e preparados';
+              unit = 'porcao';
+            } else {
+              cat = 'Outros';
+              unit = (p as any).unit || 'un';
+            }
+
+            loadedStock.push({
+              id: `stock-${p.id.replace('prod-', '')}`,
+              name: p.name,
+              category: cat,
+              unit,
+              minStock: 5,
+              currentQuantity: null,
+              isCounted: false,
+              lastCountDate: undefined,
+              unitCost: p.directUnitCost ?? null,
+              costStatus: p.directUnitCost !== null && p.directUnitCost !== undefined ? 'confirmed' : 'incomplete',
+              notes: `Sincronizado do cardápio (${p.category})`,
+            });
+          }
         });
 
         setProducts(loadedProducts);
@@ -699,6 +751,44 @@ export const BusinessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   /**
+   * Add new stock item directly
+   */
+  const addStockItem = (stockData: {
+    name: string;
+    category: StockCategory;
+    unit: UnitOfMeasure;
+    minStock: number;
+    initialQuantity?: number | null;
+    unitCost?: number | null;
+    notes?: string;
+    packageDescription?: string;
+    supplier?: string;
+  }): string => {
+    const id = `stock-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
+    const now = new Date().toISOString().slice(0, 10);
+    const isCounted = stockData.initialQuantity !== undefined && stockData.initialQuantity !== null;
+
+    const newItem: StockItem = {
+      id,
+      name: stockData.name,
+      category: stockData.category,
+      unit: stockData.unit,
+      minStock: stockData.minStock,
+      currentQuantity: isCounted ? stockData.initialQuantity! : null,
+      isCounted,
+      lastCountDate: isCounted ? now : undefined,
+      unitCost: stockData.unitCost ?? null,
+      costStatus: stockData.unitCost !== undefined && stockData.unitCost !== null ? 'confirmed' : 'incomplete',
+      notes: stockData.notes,
+      packageDescription: stockData.packageDescription,
+      supplier: stockData.supplier,
+    };
+
+    setStockItems((prev) => [...prev, newItem]);
+    return id;
+  };
+
+  /**
    * Add or update product and price history
    */
   const addProduct = (
@@ -714,6 +804,45 @@ export const BusinessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       priceHistory: productData.salePrice !== null ? [{ date: now.slice(0, 10), price: productData.salePrice, note: 'Cadastro inicial' }] : [],
     };
     setProducts((prev) => [newProd, ...prev]);
+
+    // Auto-sync new product to stockItems
+    setStockItems((prev) => {
+      const exists = prev.some((s) => s.name.trim().toLowerCase() === newProd.name.trim().toLowerCase());
+      if (exists) return prev;
+
+      let cat: StockCategory = 'Outros';
+      let unit: UnitOfMeasure = 'un';
+      if (newProd.category === 'Espetinhos') {
+        cat = 'Carnes';
+        unit = 'un';
+      } else if (newProd.category === 'Bebidas') {
+        cat = 'Bebidas';
+        unit = (newProd as any).unit || 'garrafa';
+      } else if (newProd.category === 'Porções e alimentos') {
+        cat = 'Porções e preparados';
+        unit = 'porcao';
+      } else {
+        cat = 'Outros';
+        unit = (newProd as any).unit || 'un';
+      }
+
+      const newStockItem: StockItem = {
+        id: `stock-${id.replace('prod-', '')}`,
+        name: newProd.name,
+        category: cat,
+        unit,
+        minStock: 5,
+        currentQuantity: null,
+        isCounted: false,
+        lastCountDate: undefined,
+        unitCost: newProd.directUnitCost ?? null,
+        costStatus: newProd.directUnitCost !== null && newProd.directUnitCost !== undefined ? 'confirmed' : 'incomplete',
+        notes: `Sincronizado do cardápio (${newProd.category})`,
+      };
+
+      return [...prev, newStockItem];
+    });
+
     return id;
   };
 
@@ -738,6 +867,21 @@ export const BusinessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           ...updates,
           updatedAt: now,
           priceHistory: newHistory,
+        };
+      })
+    );
+
+    // Sync updates with matching stock item
+    setStockItems((prevStock) =>
+      prevStock.map((s) => {
+        const isMatch = s.id.includes(id.replace('prod-', ''));
+        if (!isMatch) return s;
+
+        return {
+          ...s,
+          name: updates.name ? updates.name : s.name,
+          unitCost: updates.directUnitCost !== undefined ? updates.directUnitCost : s.unitCost,
+          costStatus: updates.directUnitCost !== undefined && updates.directUnitCost !== null ? 'confirmed' : s.costStatus,
         };
       })
     );
@@ -902,6 +1046,7 @@ export const BusinessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         addPurchase,
         recordStockMovement,
         performStockCount,
+        addStockItem,
         addProduct,
         updateProduct,
         saveRecipe,

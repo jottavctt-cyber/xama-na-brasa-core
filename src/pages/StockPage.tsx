@@ -17,6 +17,7 @@ import { useBusiness } from '../context/BusinessContext';
 import { StockCategory, StockItem, UnitOfMeasure } from '../types';
 import { formatBRL, formatQuantity } from '../utils/deterministicMath';
 import { StockMovementModal } from '../components/modals/StockMovementModal';
+import { NewStockItemModal } from '../components/modals/NewStockItemModal';
 
 interface StockPageProps {
   onOpenStockCount: () => void;
@@ -90,7 +91,15 @@ export const StockPage: React.FC<StockPageProps> = ({ onOpenStockCount }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setIsNewItemModalOpen(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-stone-900 bg-amber-400 hover:bg-amber-500 rounded-xl transition-all shadow-2xs cursor-pointer"
+          >
+            <Plus className="w-4 h-4 text-stone-950" />
+            <span>Novo Item no Estoque</span>
+          </button>
+
           <button
             onClick={() => {
               setMovementModalItem(null);
@@ -394,6 +403,14 @@ export const StockPage: React.FC<StockPageProps> = ({ onOpenStockCount }) => {
           isOpen={isMovementModalOpen}
           onClose={() => setIsMovementModalOpen(false)}
           selectedItem={movementModalItem}
+        />
+      )}
+
+      {/* New Stock Item Modal */}
+      {isNewItemModalOpen && (
+        <NewStockItemModal
+          isOpen={isNewItemModalOpen}
+          onClose={() => setIsNewItemModalOpen(false)}
         />
       )}
     </div>
