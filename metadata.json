@@ -1,0 +1,6 @@
+{
+  "name": "Xama Business Core",
+  "description": "Sistema interno de gestão para Xamã na Brasa: fluxo de caixa, vendas diárias, estoque com fichas técnicas, compras e relatórios determinísticos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
