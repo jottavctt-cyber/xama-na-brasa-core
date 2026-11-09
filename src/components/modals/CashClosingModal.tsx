@@ -195,32 +195,37 @@ export const CashClosingModal: React.FC<CashClosingModalProps> = ({ isOpen, onCl
             </div>
 
             {countedCash !== '' && (
-              <div
-                className={`p-3 rounded-lg text-xs flex items-center justify-between font-medium ${
-                  difference === 0
-                    ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
-                    : difference > 0
-                    ? 'bg-blue-100 text-blue-900 border border-blue-300'
-                    : 'bg-red-100 text-red-900 border border-red-300'
-                }`}
-              >
-                <div className="flex items-center gap-1.5">
-                  {difference === 0 ? (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-                  ) : (
-                    <AlertCircle className="w-4 h-4" />
-                  )}
-                  <span>
-                    {difference === 0
-                      ? 'Caixa perfeito: sem divergência.'
+              <div className="space-y-1">
+                <div
+                  className={`p-3 rounded-lg text-xs flex items-center justify-between font-medium ${
+                    difference === 0
+                      ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
                       : difference > 0
-                      ? 'Sobra de Caixa apurada:'
-                      : 'Falta / Quebra de Caixa apurada:'}
+                      ? 'bg-blue-100 text-blue-900 border border-blue-300'
+                      : 'bg-red-100 text-red-900 border border-red-300'
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5">
+                    {difference === 0 ? (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-700" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4" />
+                    )}
+                    <span>
+                      {difference === 0
+                        ? 'Caixa perfeito: sem divergência.'
+                        : difference > 0
+                        ? 'Sobra de Caixa apurada:'
+                        : 'Falta / Quebra de Caixa apurada:'}
+                    </span>
+                  </div>
+                  <span className="font-mono font-bold text-sm tabular-nums">
+                    {difference > 0 ? `+${formatBRL(difference)}` : formatBRL(difference)}
                   </span>
                 </div>
-                <span className="font-mono font-bold text-sm tabular-nums">
-                  {difference > 0 ? `+${formatBRL(difference)}` : formatBRL(difference)}
-                </span>
+                <p className="text-[10px] text-stone-500 italic text-right">
+                  O valor do Caixa Total será ajustado automaticamente com base nesta apuração.
+                </p>
               </div>
             )}
 

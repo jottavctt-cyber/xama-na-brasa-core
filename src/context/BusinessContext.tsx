@@ -926,16 +926,46 @@ export const BusinessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   /**
-   * Record Daily Cash Closing
+   * Record Daily Cash Closing & synchronize total cash balance with actual physical count
    */
   const recordCashClosing = (closingData: Omit<DailyCashClosing, 'id' | 'closedAt'>): string => {
     const id = `close-${Date.now()}`;
+    const now = new Date().toISOString();
     const closing: DailyCashClosing = {
       ...closingData,
       id,
-      closedAt: new Date().toISOString(),
+      closedAt: now,
     };
+
     setCashClosings((prev) => [closing, ...prev]);
+
+    // Synchronize Cash Balance: Create adjustment transaction for any cash variance (sobra / falta)
+    if (closingData.difference !== 0) {
+      const isSurplus = closingData.difference > 0;
+      const absDiff = Math.abs(closingData.difference);
+      const dateFormatted = closingData.date.slice(0, 10).split('-').reverse().join('/');
+
+      const adjustmentTx: FinancialTransaction = {
+        id: `tx-close-adj-${Date.now()}`,
+        date: closingData.date,
+        type: isSurplus ? 'receita' : 'despesa',
+        category: 'Outros',
+        description: isSurplus
+          ? `Ajuste - Sobra de Caixa (${dateFormatted})`
+          : `Ajuste - Quebra/Falta de Caixa (${dateFormatted})`,
+        amount: absDiff,
+        paymentMethod: 'dinheiro',
+        status: 'pago',
+        paymentDate: closingData.date,
+        referenceType: 'avulsa',
+        referenceId: id,
+        createdAt: now,
+        notes: closingData.differenceReason || (isSurplus ? 'Sobra de caixa no fechamento' : 'Falta de caixa no fechamento'),
+      };
+
+      setTransactions((prev) => [adjustmentTx, ...prev]);
+    }
+
     return id;
   };
 

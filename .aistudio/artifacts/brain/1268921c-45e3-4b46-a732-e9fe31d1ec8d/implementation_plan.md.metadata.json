@@ -1,6 +1,6 @@
 {
-  "summary":  "Plano de implementação para transição de porções para controle por quantidade de porções prontas (Mini Coxinhas, Bolinhos de Mandioca, Risoles, Mandioca com Torresmo) com custo unitário direto, mantendo insumos de carnes intactos e preservando 100% dos dados salvos no sistema.",
-  "updatedAt":  "2026-11-09T16:40:46.016674705Z",
+  "summary":  "Implementation plan to synchronize daily cash closing with total cash balance",
+  "updatedAt":  "2026-11-09T19:47:25.422931953Z",
   "requestFeedback":  true,
   "userFacing":  true
 }
