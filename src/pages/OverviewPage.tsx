@@ -79,6 +79,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
   const netMarginPct = calculateNetMarginPct(netProfit, netSales);
 
   const { inflows, outflows, netCashFlow } = calculateCashFlow(filteredTransactions);
+  const { inflows: totalAllInflows, outflows: totalAllOutflows } = calculateCashFlow(transactions);
   const currentCashBalance = calculateCurrentCashBalance(settings.openingCashDrawerDefault, transactions);
 
   // Stock status
@@ -150,7 +151,28 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
       </div>
 
       {/* KPI Primary Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        {/* Caixa Total Atual */}
+        <div className="glass-panel p-4 rounded-xl flex flex-col justify-between border-l-4 border-l-amber-500 bg-amber-50/20 shadow-2xs">
+          <div className="flex items-center justify-between text-stone-600 mb-1">
+            <span className="text-xs font-bold text-amber-950">Caixa Total Atual</span>
+            <Wallet className="w-4 h-4 text-amber-600" />
+          </div>
+          <div className="my-1">
+            <span className="text-2xl font-bold font-mono text-stone-900 tabular-nums">
+              {formatBRL(currentCashBalance)}
+            </span>
+          </div>
+          <div className="text-[11px] text-stone-500 flex items-center justify-between pt-1 border-t border-stone-200/60 font-mono tabular-nums">
+            <span className="text-emerald-700 font-semibold" title="Total de Entradas Pagas">
+              +{formatBRL(totalAllInflows)}
+            </span>
+            <span className="text-stone-300">|</span>
+            <span className="text-red-700 font-semibold" title="Total de Saídas Pagas">
+              -{formatBRL(totalAllOutflows)}
+            </span>
+          </div>
+        </div>
         {/* Vendas Líquidas */}
         <div className="glass-panel p-4 rounded-xl flex flex-col justify-between">
           <div className="flex items-center justify-between text-stone-500 mb-1">
